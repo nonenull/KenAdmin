@@ -94,7 +94,7 @@ class Teacher(models.Model):
         **Table().init(),
         **Form().init(),
     })
-    sex = models.CharField('性别', max_length=10, help_text={
+    sex = models.CharField('性别', max_length=10, choices=Sex.choices, help_text={
         **Table().init(),
         **Form().init(),
         **Filter().init(),
