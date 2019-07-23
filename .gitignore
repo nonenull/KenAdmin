@@ -126,4 +126,5 @@ dmypy.json
 
 .idea
 migrations
-entrance\mySettings.py
+entrance/mySettings.py
+tmp/
