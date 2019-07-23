@@ -3,7 +3,7 @@ import pickle
 from django.db.models import AutoField, Q, ForeignKey
 from django.db.models.query import QuerySet
 from django_mysql.models import JSONField
-from module.Platform.config import Filter as FilterHelpText
+from apps.Platform.config import Filter as FilterHelpText
 from utils.convUtil import conv, StorageUnit, convs
 import logging
 

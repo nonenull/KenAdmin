@@ -2,7 +2,7 @@
 if __name__ == "__main__":
     from utils import environment
 
-from module.Platform.models import User
+from apps.Platform.models import User
 
 
 def createSuperUser():

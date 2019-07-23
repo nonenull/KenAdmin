@@ -1,6 +1,6 @@
 # coding=utf-8
 from entrance.automate.curd.curd import CURD
-from module.Platform.models import Log
+from apps.Platform.models import Log
 import logging
 
 logger = logging.getLogger(__name__)

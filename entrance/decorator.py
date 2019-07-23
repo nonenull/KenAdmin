@@ -1,7 +1,6 @@
 # coding=utf-8
 from functools import wraps
-from module.Platform.models import Log
-from utils.log import logger
+from apps.Platform.models import Log
 
 
 def taskDecorator(func):
@@ -17,8 +16,6 @@ def taskDecorator(func):
         logObj.module = '%s.%s' % (func.__module__, func.__name__)
         logObj.type = Log.Type.Tasks
         logObj.method = Log.Method.Create
-        logger.debug('args===', args)
-        logger.debug('kwargs===', kwargs)
         try:
             result = func(*args, **kwargs)
             logObj.status = Log.Status.Success
@@ -26,7 +23,6 @@ def taskDecorator(func):
             logObj.save()
             return result
         except Exception as e:
-            logger.exception('异步任务执行出现异常', e)
             logObj.status = Log.Status.Fail
             logObj.message = str(e) + str(args) + str(kwargs)
             logObj.save()

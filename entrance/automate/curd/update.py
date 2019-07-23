@@ -5,7 +5,7 @@ from django.db.models import DateTimeField, DateField, BooleanField, ManyToOneRe
 from django_mysql.models import SetCharField, ListCharField
 
 from entrance.automate.curd.curd import CURD
-from module.Platform.templatetags.formTag import BaseForm
+from apps.Platform.templatetags.formTag import BaseForm
 from utils.convUtil import conv, StorageUnit
 import logging
 

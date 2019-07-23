@@ -26,7 +26,7 @@ SECRET_KEY = 'kawsk8xrs0ydv!et9wgry-%&df@y-36^)ap&e5ss+hujm4((1c'
 
 # DEBUG CONFIG
 DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': 'module.Platform.middleware.showToolbar',
+    'SHOW_TOOLBAR_CALLBACK': 'apps.Platform.middleware.showToolbar',
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'djcelery',
     'channels',
-    'module.Pagination.apps.PaginationConfig',
-    'module.Platform.apps.PlatformConfig',
+    'apps.Pagination.apps.PaginationConfig',
+    'apps.Platform.apps.PlatformConfig',
 ]
 
 MIDDLEWARE = [
@@ -59,8 +59,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'module.Pagination.middleware.PaginationMiddleware',
-    'module.Platform.middleware.PlatformMiddleware',
+    'apps.Pagination.middleware.PaginationMiddleware',
+    'apps.Platform.middleware.PlatformMiddleware',
 ]
 
 ROOT_URLCONF = 'entrance.urls'

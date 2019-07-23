@@ -15,23 +15,23 @@ Including another URLconf
 """
 from django.urls import include, path
 import debug_toolbar
-import module.Platform.urls
-import module.Platform.mainUrls
+import apps.Platform.urls
+import apps.Platform.mainUrls
 from . import routes
 
-adminAppName = module.Platform.urls.app_name
-platformAppName = module.Platform.mainUrls.app_name
+adminAppName = apps.Platform.urls.app_name
+platformAppName = apps.Platform.mainUrls.app_name
 
 debugKey = '__debug__'
 urlpatterns = [
     path(debugKey, include(debug_toolbar.urls)),
     routes.addRoute(
         r'',
-        include(module.Platform.mainUrls, namespace=platformAppName),
+        include(apps.Platform.mainUrls, namespace=platformAppName),
     ),
     routes.addRoute(
         r'{}/'.format(platformAppName),
-        include(module.Platform.urls, namespace=adminAppName),
+        include(apps.Platform.urls, namespace=adminAppName),
         rtype=routes.Type.include,
         display="系统设置"
     ),

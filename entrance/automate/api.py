@@ -4,7 +4,7 @@ import logging
 
 from django.http import JsonResponse
 
-from module.Platform.models import ApiLog
+from apps.Platform.models import ApiLog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

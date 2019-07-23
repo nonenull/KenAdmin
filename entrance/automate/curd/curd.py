@@ -1,6 +1,6 @@
 # coding=utf-8
 import re
-from module.Platform.models import Log
+from apps.Platform.models import Log
 from utils.stack import Stack
 import logging
 

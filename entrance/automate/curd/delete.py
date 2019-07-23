@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.db.models.query import QuerySet
 from entrance.automate.curd.curd import CURD
-from module.Platform.models import User
+from apps.Platform.models import User
 import logging
 
 logger = logging.getLogger(__name__)

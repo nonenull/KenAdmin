@@ -12,7 +12,7 @@ from django.urls import resolve, reverse, NoReverseMatch
 
 from entrance import routes
 from entrance.routersConfig import Type
-from module.Platform.models import Perm, User, User_Role
+from apps.Platform.models import Perm, User, User_Role
 import logging
 
 logger = logging.getLogger(__name__)
