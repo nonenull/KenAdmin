@@ -17,10 +17,12 @@ from django.urls import include, path
 import debug_toolbar
 import apps.Platform.urls
 import apps.Platform.mainUrls
+import apps.SIMS.urls
 from . import routes
 
 adminAppName = apps.Platform.urls.app_name
 platformAppName = apps.Platform.mainUrls.app_name
+simsAppName = apps.SIMS.urls.app_name
 
 debugKey = '__debug__'
 urlpatterns = [
@@ -28,6 +30,12 @@ urlpatterns = [
     routes.addRoute(
         r'',
         include(apps.Platform.mainUrls, namespace=platformAppName),
+    ),
+    routes.addRoute(
+        r'{}/'.format(platformAppName),
+        include(apps.SIMS.urls, namespace=simsAppName),
+        rtype=routes.Type.include,
+        display="管理系统"
     ),
     routes.addRoute(
         r'{}/'.format(platformAppName),

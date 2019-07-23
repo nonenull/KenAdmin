@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'channels',
     'apps.Pagination.apps.PaginationConfig',
     'apps.Platform.apps.PlatformConfig',
+    'apps.SIMS.apps.SimsConfig',
 ]
 
 MIDDLEWARE = [
