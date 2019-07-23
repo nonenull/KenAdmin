@@ -1,0 +1,172 @@
+{% extends 'public/BaseLayout.html' %}
+{% load baseTag %}
+{% block content %}
+    {% load formTag %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm8 layui-col-sm-offset2 layui-col-md6 layui-col-md-offset3 layui-col-lg6 layui-col-lg-offset3">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    {{ model|toForm:'{"action":""}' }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block js %}
+        let ReleateData = function (tableName) {
+            this.tableName = tableName;
+        };
+
+        ReleateData.prototype.get = function (name) {
+            name = name + '_data';
+            return layui.sessionData(this.tableName)[name];
+        };
+
+        ReleateData.prototype.set = function (name, relatedData) {
+            name = name + '_data';
+            layui.sessionData(this.tableName, {
+                key: name, value: relatedData
+            });
+        };
+
+        ReleateData.prototype.add = function (name, dataJson) {
+            let relatedData = this.get(name);
+            if (!relatedData) {
+                relatedData = [];
+            }
+            relatedData.push(dataJson);
+            this.set(name, relatedData);
+        };
+
+        ReleateData.prototype.remove = function (name, index, relatedData) {
+            relatedData.splice(index, 1);
+            console.log('remove====', relatedData);
+            this.set(name, relatedData);
+        };
+
+
+        let tableName = location.pathname;
+        let rd = new ReleateData(tableName);
+        let formCacheData = layui.sessionData(tableName);
+        // console.log("formCacheData========", formCacheData);
+        layui.use(['jquery', 'myForm', 'myUrl', 'myElement', 'laytpl'], function () {
+            let $ = layui.jquery;
+            let form = layui.myForm();
+            let mLayer = layui.myLayer(true);
+            let cLayer = layui.myLayer();
+            let laytpl = layui.laytpl;
+            let element = layui.myElement();
+            let myUrl = layui.myUrl;
+
+            /*
+            * 将表单数据缓存起来
+            * */
+            function cacheData() {
+                let formData = $('[lay-filter="auto-form"]').serializeArray();
+                console.log('formData=========', formData);
+                $.each(formData, function () {
+                    layui.sessionData(tableName, {
+                        key: this.name, value: this.value
+                    })
+                });
+            }
+
+            form.val("auto-form", formCacheData);
+
+            // 点击重置之后, 把缓存的表单数据都清掉
+            $('button[type="reset"]').click(function () {
+                layui.sessionData(tableName, null);
+                location.reload()
+                // 把关联数据也要清理掉
+                //$('.relate-data').html('');
+            });
+
+            /*
+            * 点击缓存表单, 将表单数据缓存起来
+            * */
+            $('a[my-filter="form-cache-button"]').on('click', function (e) {
+                cacheData();
+                cLayer.layer.msg('表单已缓存');
+                e.stopPropagation()
+            });
+
+            {% block action %}{% endblock %}
+
+            /*
+            * 点击 关联数据按钮的时候, 自动将当前表单数据保存一下.
+            * 页面刷新后, 数据将自动恢复
+            * */
+            $('.layui-icon.layui-icon-add-1.foreignKey-add').on('click', function () {
+                let href = $(this).attr('href');
+                cacheData();
+                cLayer.page(href, "操作关联数据",);
+            });
+
+            let openedClassName = 'already-open';
+            // 处理 关联 数据创建按钮
+            $('.relate-btn button').on('click', function () {
+                cacheData();
+                let title = $(this).parents('.layui-form-item').children('.layui-form-label').text();
+                let addHref = $(this).attr('addhref');
+                cLayer.page(addHref, '添加' + title);
+                //
+                $('.relate-btn').removeClass(openedClassName);
+                $(this).parent().addClass(openedClassName);
+                return false;
+            });
+
+            {% verbatim liTemplate %}
+                let liTemplate = '<li>{{ d.cname }}<i class="layui-icon layui-icon-close-fill" href="{{ d.delHref }}"></i><input type="hidden" name="{{ d.name }}[]" value="{{ d.itemId }}"></li>';
+            {% endverbatim liTemplate %}
+
+            // 加载生成 缓存的关联数据
+            $('.relate-btn').each(function (k, v) {
+                let self = $(this);
+                let btn = self.children('button');
+                let name = btn.attr('name');
+                let relatedData = formCacheData[name + '_data'];
+                if (!relatedData) {
+                    return true;
+                }
+                let delHref = btn.attr('delHref');
+                $.each(relatedData, function (i, item) {
+                    let liStr = laytpl(liTemplate).render($.extend(item, {'name': name, 'delHref': delHref}));
+                    self.next('.relate-data').append(liStr);
+                })
+            });
+
+            // 关联数据点击删除按钮
+            // 删除之后, 在缓存里也去掉相应的记录
+            $('.relate-data .layui-icon').on('click', function () {
+                let self = $(this);
+                let href = self.attr('href');
+                let id = self.next().val();
+                $.post(href, {ids: id}, function (result) {
+                    mLayer.success(result, function () {
+                        let name = self.parents('.relate-data').prev().children('button').attr('name');
+                        let relatedData = rd.get(name);
+                        $.each(relatedData, function (i, item) {
+                            if (item.itemId == id) {
+                                console.log('i, item========', i, item);
+                                rd.remove(name, i, relatedData);
+                                return false;
+                            }
+                        });
+                        self.parent().remove();
+                    });
+                })
+            });
+
+            {% block extendJs %}{% endblock %}
+        });
+
+        /*
+        *  给子iframe 页面新建数据后调用
+        *  保存 新建数据的信息
+        * */
+        function addReleateData(name, dataJson) {
+            rd.add(name, dataJson);
+        }
+    {% endblock %}
+</script>

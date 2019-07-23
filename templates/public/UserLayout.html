@@ -1,0 +1,30 @@
+{% extends 'public/BaseLayout.html' %}
+{% block toolBar %}
+    <div class="layui-row layui-col-space10" style="text-align: center;">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-btn-container>">
+                {% block btn-group %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block contentWrap %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm12 layui-col-md10 layui-col-lg10 layui-col-md-offset1 layui-col-lg-offset1">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-sm12 layui-col-md8 layui-col-lg8">
+                    {% block UserTopLeftContent %}{% endblock %}
+                </div>
+                <div class="layui-col-sm12 layui-col-md4 layui-col-lg4">
+                    {% block UserTopRightContent %}{% endblock %}
+                </div>
+            </div>
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+                    {% block UserBottomContent %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

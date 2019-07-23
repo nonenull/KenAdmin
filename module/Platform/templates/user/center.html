@@ -1,0 +1,120 @@
+{% extends 'public/UserLayout.html' %}
+{% block panel %}
+{% endblock %}
+
+{% block UserTopLeftContent %}
+    {% load baseTag %}
+    {% load usersTag %}
+    <div class="layui-card" my-filter="layui-card-autoheight">
+        <div class="layui-card-header">用户信息</div>
+        <div class="layui-card-body">
+            <div class="layui-fluid">
+                <div class="layui-row layui-col-space10">
+                    <div class="layui-col-sm12 layui-col-md12 layui-col-lg6">
+                        <div class="my-detail">
+                            <table class="layui-table my-detail-table">
+                                <tbody>
+                                <tr>
+                                    <td>账户名</td>
+                                    <td>{{ userInfo.account }}</td>
+                                </tr>
+                                <tr>
+                                    <td>姓名</td>
+                                    <td>{{ userInfo.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>手机</td>
+                                    <td>{{ userInfo.mobile }}</td>
+                                </tr>
+                                <tr>
+                                    <td>邮箱</td>
+                                    <td>{{ userInfo.email }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="layui-col-sm12 layui-col-md12 layui-col-lg6">
+                        <div class="my-detail">
+                            <table class="layui-table my-detail-table">
+                                <tbody>
+                                <tr>
+                                    <td>角色</td>
+                                    <td>
+                                        {{ userInfo|generateBadge:'isSuperUser' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>状态</td>
+                                    <td>
+                                        {{ userInfo|generateBadge:'status' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>注册时间</td>
+                                    <td>{{ userInfo.createTime|formatDate }}</td>
+                                </tr>
+                                <tr>
+                                    <td>过期时间</td>
+                                    <td>{{ userInfo|generateExpireTime }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block UserTopRightContent %}
+    <div class="layui-card" my-filter="layui-card-autoheight">
+        <div class="layui-card-header">上次登录</div>
+        <div class="layui-card-body">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+                    <div class="my-detail">
+                        <table class="layui-table my-detail-table">
+                            <tbody>
+                            <tr>
+                                <td>日期</td>
+                                <td>{{ lastLoginInfo.createTime|formatDate|default:"无" }}</td>
+                            </tr>
+                            <tr>
+                                <td>IP</td>
+                                <td>{{ lastLoginInfo.message.ip|default:"无" }}</td>
+                            </tr>
+                            <tr>
+                                <td>地区</td>
+                                <td>{{ lastLoginInfo.message.area|default:"无" }}</td>
+                            </tr>
+                            <tr title="{{ lastLoginInfo.message.agent }}">
+                                <td>用户代理</td>
+                                <td>{{ lastLoginInfo.message.agent|default:"无"|truncatechars:20 }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block UserBottomContent %}
+    <div class="layui-card">
+        <div class="layui-card-header">最近操作记录</div>
+        <div class="layui-card-body">
+            <div class="my-detail">
+                <div class="my-log-detail">
+                    {% for i in operationLog %}
+                        <p>{{ i.createTime|date:"Y-m-d H:i:s" }} - {{ i.get_method_display }} - {{ i.message }}</p>
+                    {% empty %}
+                        无
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

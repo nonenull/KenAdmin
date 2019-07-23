@@ -1,0 +1,99 @@
+{% extends 'public/BaseLayout.html' %}
+{% block body %}
+    <style>
+        body {
+            line-height: 24px;
+            font: 14px Helvetica Neue, Helvetica, PingFang SC, \5FAE\8F6F\96C5\9ED1, Tahoma, Arial, sans-serif;
+        }
+
+        .container {
+            margin: 0 auto;
+            width: 80%;
+            min-width: 600px;
+        }
+
+        #msg-container {
+            color: #393D49;
+            border-bottom: 2px solid #393D49;
+        }
+
+        #msg-container > * {
+            display: inline-block;
+        }
+
+        #msg-container .left {
+            font-size: 8em;
+        }
+
+        #msg-container .right {
+            float: right;
+        }
+
+        #msg-container .right > * {
+            line-height: 5em;
+        }
+
+        #msg-container .right span {
+            font-size: 3em;
+        }
+
+        #msg {
+            font-size: 20px;
+            overflow: auto;
+            height: inherit;
+            margin-top: 50px;
+            color: #393D49;
+        }
+    </style>
+    <div class="container">
+        <div id="msg-container">
+            <div class="left">{{ status }}</div>
+            <div class="right">
+                <span></span>
+            </div>
+        </div>
+        <div id="msg">{{ content }}</div>
+    </div>
+
+    <script>
+        layui.use('jquery', function () {
+            let $ = layui.jquery;
+            let redirect = '{{ redirect }}';
+            let countdown = {{ countdown }};
+            let spanDom = $(".right").children('span');
+
+            function closeWebPage() {
+                if (navigator.userAgent.indexOf("MSIE") > 0) {
+                    if (navigator.userAgent.indexOf("MSIE 6.0") > 0) {
+                        window.opener = null;
+                        window.close();
+                    } else {
+                        window.open('', '_top');
+                        window.top.close();
+                    }
+                } else if (navigator.userAgent.indexOf("Firefox") > 0 || navigator.userAgent.indexOf("Chrome") > 0) {
+                    //window.location.href = 'about:blank ';
+                    window.location.href = "about:blank";
+                    window.close();
+                } else {
+                    window.opener = null;
+                    window.open('', '_self');
+                    window.close();
+                }
+            }
+
+            if (redirect) {
+                let timer = setInterval(function () {
+                    spanDom.text(countdown);
+                    if (countdown !== 0) {
+                        --countdown;
+                        return false;
+                    }
+                    clearInterval(timer);
+                    spanDom.text('');
+                    location.href = redirect;
+                }, 1000)
+            }
+        });
+    </script>
+{% endblock %}

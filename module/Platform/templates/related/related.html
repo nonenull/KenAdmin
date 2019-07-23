@@ -1,0 +1,48 @@
+{% extends 'public/ListLayout.html' %}
+{% load related %}
+{% block btn-group %}
+    <a class="layui-btn layui-btn-sm layui-btn-normal" href="{{ request|getUrl:'add' }}" my-filter="add-button" link="layerPanel">
+        <i class="layui-icon layui-icon-add-circle"></i> 新增
+    </a>
+    <button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ request|getUrl:'delete' }}" my-filter="batch-delete-button">
+        <i class="layui-icon layui-icon-delete"></i> 批量删除
+    </button>
+{% endblock %}
+<script>
+    {% block tableBtns %}
+        let _editlUrl = "{{ request|getUrl:'edit' }}";
+        let _deleteUrl = "{{ request|getUrl:'delete' }}";
+        if (_editlUrl) {
+            myTableConf.btn.push({
+                url: _editlUrl, name: '编辑', color: 'layui-btn-warm', callback: function (checker) {
+                    mLayer.page(_editlUrl + '/' + checker.getSelect().ids, '编辑页');
+                }
+            });
+        }
+        if (_deleteUrl) {
+            myTableConf.btn.push({
+                url: _deleteUrl, name: '删除', color: 'layui-btn-danger', callback: function (checker) {
+                    let tipList = '';
+                    let tableSelect = checker.getSelect();
+                    let ids = tableSelect.ids;
+                    if (ids.length === 0) {
+                        mLayer.warning('没有选择项');
+                        return false;
+                    }
+                    $.each(tableSelect.dom, function (k, v) {
+                        tipList += $.trim($(this).attr('data-name')) + '\n';
+                    });
+                    mLayer.confirm('确定要删除以下 信息吗？\n ' + tipList, function () {
+                        let url = myUrl();
+                        url.args.ids = ids;
+                        $.post(_deleteUrl, url.encodeArgs(), function (result) {
+                            mLayer.success(result, function () {
+                                location.reload();
+                            });
+                        });
+                    });
+                }
+            });
+        }
+    {% endblock %}
+</script>

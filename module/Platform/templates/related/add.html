@@ -1,0 +1,33 @@
+{% extends 'public/AddLayout.html' %}
+
+<script>
+    {% block extendJs %}
+        let path = location.pathname;
+        let pathList = path.split('/');
+        let modelName = pathList[3].split('.')[1];
+        let modelId = pathList[4];
+
+        let param = {};
+        let modelIdName = modelName + '_id';
+
+        // 加这一步是因为有些字段, 会出现部分字母大小写不一致的问题, 需要找出实际的字段name值
+        // 比如 alarmgroup_id 和 alarmGroup_id
+        $('.layui-form[lay-filter="auto-form"]').find('input, select, textarea').each(function () {
+            let dom = $(this);
+            let name = dom.attr('name');
+            if (name === undefined) {
+                return false;
+            }
+            if (name.toLowerCase() === modelIdName) {
+                modelIdName = name;
+                return false;
+            }
+        });
+
+        param[modelIdName] = modelId;
+        form.val("auto-form", param);
+
+        $('[lay-filter="auto-form"]').find('select[name="' + modelIdName + '"]').prop('disabled', true);
+        form.render('select', 'auto-form');
+    {% endblock %}
+</script>

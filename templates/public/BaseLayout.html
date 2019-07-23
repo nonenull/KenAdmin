@@ -1,0 +1,58 @@
+{% spaceless %}
+<html lang="utf8">
+<head>
+    {% load static %}
+    <title></title>
+    <meta http-equiv="x-ua-compatible" content="IE=11">
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'css/public.css' %}" media="all">
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+    {% block css %}{% endblock %}
+    <script src="{% static 'layui/layui.js' %}"></script>
+</head>
+<body>
+{% block body %}
+    <div class="my-container layui-anim layui-anim-upbit">
+        <!-- content 内容 -->
+        {% block topContent %}{% endblock %}
+        {% block contentWrap %}
+            <div class="layui-row layui-col-space10 my-content">
+                <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+        <!-- 提交Ajax 时的 loadding 效果 -->
+        <div id="loading" style="display: none;">
+            <div class="loading-mask">
+                <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop"></i>
+                <span>loading...</span>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let layuiModule = layui.config({
+            base: '{% static 'js' %}/'
+        }).extend({
+            myElement: 'extentd/myElement',
+            myLayer: 'extentd/myLayer',
+            myForm: 'extentd/myForm',
+            myUrl: 'extentd/myUrl',
+            myTree: 'extentd/myTree',
+            mySort: 'extentd/mySort',
+            myDate: 'extentd/myDate',
+            myTable: 'extentd/myTable',
+            myCode: 'extentd/myCode',
+            myFilter: 'extentd/myFilter', mySSH: 'extentd/mySSH',
+        });
+        layuiModule.use('public');
+
+        <!-- js 逻辑 -->
+        {% block js %}{% endblock %}
+    </script>
+{% endblock %}
+{% block otherJS %}{% endblock %}
+</body>
+</html>
+{% endspaceless %}

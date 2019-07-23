@@ -1,0 +1,40 @@
+{% extends 'public/BaseLayout.html' %}
+{% block content %}
+    {% load detailTag %}
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm3 layui-col-md3 layui-col-lg4">
+            <div class="layui-card">
+                <div class="layui-card-header">基本信息</div>
+                <div class="layui-card-body">
+                    {{ queryset|toDetail }}
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm9 layui-col-md9 layui-col-lg8">
+            <div class="layui-card">
+                <div class="layui-card-header">关联数据</div>
+                <div class="layui-card-body">
+                    {{ queryset|toRelated }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block js %}
+        layui.use(['jquery', 'element'], function () {
+            let $ = layui.jquery;
+            let element = layui.element;
+            //  关联的 iframe 默认是不加载内容的, 当标签页打开时才开始加载
+            element.on('tab(relatedTab)', function (data) {
+                let tabDom = $(data.elem);
+                let iframe = tabDom.find('.layui-tab-content > .layui-show iframe');
+                // 防止没次切换标签都自动刷新一次
+                if (!iframe.attr('src')) {
+                    iframe.attr('src', iframe.attr('lazySrc'));
+                }
+            });
+            $('.layui-tab[lay-filter="relatedTab"] > .layui-tab-title > .layui-this').click();
+        });
+    {% endblock %}
+</script>

@@ -1,0 +1,72 @@
+{% extends 'public/UserLayout.html' %}
+
+{% block panel %}{% endblock %}
+{% block UserBottomContent %}
+    <div class="layui-card" my-filter="layui-card-autoheight">
+        <div class="layui-card-header">路由列表</div>
+        <div class="layui-card-body">
+            <blockquote class="layui-elem-quote">注意: 此处显示的权限包含了所属对象的权限</blockquote>
+            <ul id="menus"></ul>
+            <button class="layui-btn layui-btn-sm layui-btn-warm" style="margin:20px" my-filter="update-perm">更改权限</button>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block js %}
+        let allMenu = {% autoescape off %}{{ allMenu }}{% endautoescape %};
+        let authorizedAllMenu = {% autoescape off %}{{ authorizedAllMenu }}{% endautoescape %};
+
+        layuiModule.use(['myTree', 'myLayer'], function () {
+            let $ = layui.jquery;
+            let mLayer = layui.myLayer(true);
+            let menuId = '#menus';
+
+            /*
+            let checkList = [];
+            layui.each(authorizedAllMenu, function (k, v) {
+                checkList.push(v.name)
+            });
+            */
+
+            // 生成tree 菜单
+            layui.myTree({
+                elem: menuId, //传入元素选择器
+                check: 'checkbox',
+                checkList: authorizedAllMenu,
+                click: function (node, elem) {
+                    console.log(node, elem);
+                },
+                opened: function (node) {
+                    // 打开树菜单后 存入菜单ID
+                    layui.data('perm-menus', {
+                        key: node.name,
+                        value: ' '
+                    });
+                },
+                closed: function (node) {
+                    // 关闭树菜单后 移除菜单ID
+                    layui.data('perm-menus', {
+                        key: node.name,
+                        remove: true
+                    });
+                },
+                nodes: allMenu
+            });
+
+            $('button[my-filter="update-perm"]').on('click', function () {
+                let perms = $(menuId).find('input[type="checkbox"]').serialize();
+                let href = location.href;
+                mLayer.confirm('确定要修改此用户的权限吗?', function () {
+                    $.post(href, perms, function (result) {
+                        mLayer.success(result, function () {
+                            parent.layer.close();
+                        });
+                    });
+                });
+            });
+
+        });
+
+
+    {% endblock %}
+</script>

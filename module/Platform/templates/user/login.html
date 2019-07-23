@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <meta http-equiv="x-ua-compatible" content="IE=11">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.png' %}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <title>登录OMS</title>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/login_style.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+
+<div class="banner">
+    <canvas id='canvas'>您的浏览器不支持canvas</canvas>
+    <div id="login" class="clearfix">
+        <h1>OMS</h1>
+        <div class="login-left">
+            <div>本地</div>
+            <div>域(AD)</div>
+        </div>
+        <div class="login-right">
+            <div class="layui-form">
+                <form method="post" action="{% url 'platform:login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="native">
+                    <ul>
+                        <li><input type="text" name="username" placeholder="帐号" lay-verify="required" class="layui-input" autocomplete></li>
+                        <li><input type="password" name="password" placeholder="密码" lay-verify="required" class="layui-input" autocomplete></li>
+                        <li>
+                            <button class="layui-btn btn-login" lay-submit>登录</button>
+                        </li>
+                        {% if next %}
+                            <input type='hidden' name='next' value='{{ next }}'>
+                        {% endif %}
+                    </ul>
+                </form>
+            </div>
+            <div class="layui-form">
+                <div style="height:100px;line-height:100px;text-align: center;">不支持</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        Copyright©2018 恒信永利 运维部
+    </div>
+
+</div>
+<script src="{% static 'js/canvas.js' %}"></script>
+<script src="{% static 'layui/layui.js' %}"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let layer = layui.layer;
+        $('input[name="username"]').focus();
+
+        {% if err %}
+            layer.msg('{{ err }}');
+        {% endif %}
+
+        let tabDom = $('.login-left > div');
+        let tabContentDom = $('.login-right > div');
+        tabDom.on('click', function () {
+            let self = $(this);
+            let index = self.index();
+            tabContentDom.hide();
+            tabContentDom.eq(index).slideDown();
+            tabDom.removeClass('selected');
+            self.addClass('selected');
+        });
+
+        tabDom.first().click();
+    })
+</script>
+</body>
+</html>

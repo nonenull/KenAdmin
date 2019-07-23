@@ -1,0 +1,70 @@
+{% extends 'public/BaseLayout.html' %}
+{% block css %}
+    <style>
+        .layui-row.layui-col-space10 .layui-col-sm12 {
+            margin-bottom: 10px;
+        }
+
+        .layui-tab.layui-tab-card {
+            background-color: #fff;
+        }
+
+        .layui-form-checkbox {
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {% load baseTag %}
+    {% load formTag %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm6 layui-col-sm-offset3 layui-col-md6 layui-col-md-offset3 layui-col-lg6 layui-col-lg-offset3">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    {{ queryset|toForm:'{"filling":"False","batch":"True"}' }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block js %}
+        layui.use(['form', 'myLayer', 'myElement', 'myUrl'], function () {
+            let $ = layui.jquery;
+            let form = layui.form;
+            let myElement = layui.myElement();
+            let myUrl = layui.myUrl;
+            let mLayer = layui.myLayer(true);
+
+            let _updateUrl = "{% block updateUrl %}{{ request.path }}{% endblock %}" || undefined;
+
+            // 自动处理 —— 编辑
+            form.on('submit(update)', function (data) {
+                mLayer.confirm('确定要更新此信息吗', function () {
+                    try {
+                        $.post(_updateUrl, data.field, function (result) {
+                            mLayer.success(result, function () {
+                                mLayer.close();
+                                location.reload();
+                            });
+                            // layer.confirm("数据更新成功!\n是否需要返回列表页?", function () {
+                            //     window.history.back(-1);
+                            // });
+                        });
+                    } catch (error) {
+                        var isReferenceErr = ('ReferenceError' === error.name);
+                        if (isReferenceErr) {
+                            console.log('如需要自动监听编辑按钮，请检查 _updateUrl 变量');
+                        } else {
+                            console.log('编辑 发生意外:', error);
+                        }
+                    }
+                });
+                return false;
+            });
+            {# 扩展用的 JS 块 #}
+            {% block editJs %}{% endblock %}
+        });
+    {% endblock %}
+</script>

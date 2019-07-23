@@ -1,0 +1,32 @@
+{% extends 'public/ListLayout.html' %}
+
+{% block panel %}
+{% endblock %}
+
+{% block list-header %}
+    <div class="layui-card-header my-card-header">
+        <button class="layui-btn layui-btn-sm layui-btn-normal" style="margin:5px" my-filter="add-role">应用角色</button>
+    </div>
+{% endblock %}
+<script>
+    {% block logicJs %}
+        let roleList = {% autoescape off %}{{ roleList }}{% endautoescape %};
+        $.each(roleList, function (k, v) {
+            myTable.checker.select(v);
+        });
+
+        $('button[my-filter="add-role"]').on('click', function () {
+            let selectIds = myTable.checker.getSelect().ids;
+            let urlObj = myUrl();
+            urlObj.args.role = selectIds;
+            let href = location.href;
+            mLayer.confirm('确定要修改此用户的角色吗?', function () {
+                $.post(href, urlObj.encode(true), function (result) {
+                    mLayer.success(result, function () {
+                        mLayer.close()
+                    });
+                });
+            });
+        });
+    {% endblock %}
+</script>

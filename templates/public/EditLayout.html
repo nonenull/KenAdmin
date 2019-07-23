@@ -1,0 +1,77 @@
+{% extends 'public/AddAndEditLayout.html' %}
+{% block css %}
+    <style>
+        .layui-row.layui-col-space10 .layui-col-sm12 {
+            margin-bottom: 10px;
+        }
+
+        .layui-tab.layui-tab-card {
+            background-color: #fff;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {% load baseTag %}
+    {% load formTag %}
+    {% load detailTag %}
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm3 layui-col-md3 layui-col-lg4">
+            <div class="layui-card">
+                <div class="layui-card-header">基本信息</div>
+                <div class="layui-card-body">
+                    {{ queryset|toForm:'{"action":"", "filling":"True"}' }}
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm9 layui-col-md9 layui-col-lg8">
+            <div class="layui-card">
+                <div class="layui-card-header">关联数据</div>
+                <div class="layui-card-body">
+                    {{ queryset|toRelated:'False' }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block action %}
+        let _updateUrl = "{% block updateUrl %}{{ request.path }}{% endblock %}" || undefined;
+        // 自动处理 —— 编辑
+        form.on('submit(update)', function (data) {
+            mLayer.confirm('确定要更新此信息吗', function () {
+                try {
+                    $.post(_updateUrl, data.field, function (result) {
+                        mLayer.success(result, function () {
+                            //mLayer.close();
+                            layui.sessionData(tableName, null);
+                            // 只刷新当前
+                            location.reload();
+                        });
+                    });
+                } catch (error) {
+                    var isReferenceErr = ('ReferenceError' === error.name);
+                    if (isReferenceErr) {
+                        console.log('如需要自动监听编辑按钮，请检查 _updateUrl 变量');
+                    } else {
+                        console.log('编辑 发生意外:', error);
+                    }
+                }
+            });
+            return false;
+        });
+
+        //  关联的 iframe 默认是不加载内容的, 当标签页打开时才开始加载
+        element.on('tab(relatedTab)', function (data) {
+            let tabDom = $(data.elem);
+            let iframe = tabDom.find('.layui-tab-content > .layui-show iframe');
+            // 防止没次切换标签都自动刷新一次
+            if (!iframe.attr('src')) {
+                iframe.attr('src', iframe.attr('lazySrc'));
+            }
+        });
+        $('.layui-tab[lay-filter="relatedTab"] > .layui-tab-title > .layui-this').click();
+
+        {# 扩展用的 JS 块 #}
+        {% block editJs %}{% endblock %}
+    {% endblock %}
+</script>

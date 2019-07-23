@@ -1,0 +1,404 @@
+{% extends 'public/BaseLayout.html' %}
+{% block content %}
+    {% load pagination %}
+    <!-- content 上面的工具栏 -->
+    {% block panel %}
+        <div class="my-panel layui-row layui-col-space10">
+            <div class="layui-col-xs12 layui-col-sm4 layui-col-md3 layui-col-lg3 my-left-panel">
+                <button class="layui-btn layui-btn-sm layui-btn-normal">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                </button>
+                {% block toolbar-form %}
+                    <form class="layui-form" method="get">
+                        <div class="layui-form-item my-search-bar">
+                            <div class="layui-input-block" style="margin-left: 0;">
+                                <input type="text" name="search" value="{{ search }}" lay-verify="required"
+                                       placeholder="搜索框,回车键提交"
+                                       class="layui-input">
+                                <dl class="layui-anim layui-anim-upbit"></dl>
+                            </div>
+                        </div>
+                    </form>
+                {% endblock %}
+            </div>
+
+            <!-- 工具栏 -->
+            <div class="layui-col-xs12 layui-col-sm8 layui-col-md8 layui-col-lg8 layui-col-md-offset1 layui-col-lg-offset1">
+                {% block toolBar %}
+                    {% load btnTag %}
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-sm12 layui-col-md12 layui-col-lg8">
+                            <div class="layui-btn-container">
+                                {% block btn-group-front %}{% endblock %}
+                                {% generateBtn %}
+                                {% block btn-group %}{% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+    {% endblock %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                {% block list-header %}
+                    <div class="layui-card-header my-card-header" style="display: none;"></div>
+                {% endblock %}
+                <div class="layui-card-body">
+                    {% block table %}
+                        {% load tableTag %}
+                        {% Table queryset %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block js %}
+        {% load baseTag %}
+        let _detailUrl = '{{ request|generateUrlVariable:'detail' }}';
+        let _editlUrl = '{{ request|generateUrlVariable:'edit' }}';
+        let _deleteUrl = '{{ request|generateUrlVariable:'delete' }}';
+        layui.use(['myElement', 'myForm', 'myLayer', 'myFilter', 'myUrl', 'myTable', 'mySort'], function () {
+            let $ = layui.jquery;
+            let form = layui.myForm();
+            layui.mySort('.layui-table');
+            let myUrl = layui.myUrl;
+            let myElement = layui.myElement();
+            let mLayer = layui.myLayer(true);
+            let cLayer = layui.myLayer();
+
+            function generateUrl(url, id) {
+                return url.replace('/0/', '/' + id + '/');
+            }
+
+            let myTableConf = {};
+            myTableConf.dom = $('.layui-table').has('.my-checkbox-btn');
+            myTableConf.btn = [];
+            // 如果三种链接都不存在, 则关闭右键菜单功能
+            {% block tableBtns  %}
+                if (_editlUrl) {
+                    myTableConf.btn.push({
+                        url: _editlUrl, name: '编辑', color: 'layui-btn-warm', callback: function (checker) {
+                            mLayer.page(generateUrl(_editlUrl, checker.getSelect().ids), '编辑页');
+                        }
+                    });
+                }
+
+                if (_detailUrl) {
+                    myTableConf.btn.push({
+                        url: _detailUrl, name: '详情', color: 'layui-btn-normal', callback: function (checker) {
+                            mLayer.page(generateUrl(_detailUrl, checker.getSelect().ids), '详情页');
+                        }
+                    });
+                }
+
+                if (_deleteUrl) {
+                    myTableConf.btn.push({
+                        url: _deleteUrl, name: '删除', color: 'layui-btn-danger', callback: function (checker) {
+                            let tipList = '';
+                            let tableSelect = checker.getSelect();
+                            let ids = tableSelect.ids;
+                            if (ids.length === 0) {
+                                mLayer.warning('没有选择项');
+                                return false;
+                            }
+                            $.each(tableSelect.dom, function (k, v) {
+                                tipList += $.trim($(this).attr('data-name')) + '\n';
+                            });
+                            mLayer.confirm('确定要删除以下 信息吗？\n ' + tipList, function () {
+                                let url = myUrl();
+                                url.args.ids = ids;
+                                $.post(_deleteUrl, url.encodeArgs(), function (result) {
+                                    mLayer.success(result, function () {
+                                        location.reload();
+                                    });
+                                });
+                            });
+                        }
+                    });
+                }
+            {% endblock  %}
+
+            let myTable = layui.myTable(myTableConf);
+            layui.myFilter();
+
+            let index;
+            // 处理iframe 里面的刷新按钮
+            $(document).on('click mouseenter mouseleave', '.my-left-panel button.layui-btn', function (e) {
+                switch (e.type) {
+                    case 'click':
+                        mLayer.layer.msg('刷新中', {
+                            time: 500 //（如果不配置，默认是3秒）
+                        }, function () {
+                            location.reload();
+                        });
+                        break;
+                    case 'mouseenter':
+                        let that = this;
+                        if (index) return false;
+                        index = cLayer.layer.tips('局部刷新', that);
+                        break;
+                    case 'mouseleave':
+                        cLayer.layer.close(index);
+                        index = undefined;
+                        break;
+                }
+            });
+
+            //根据表单自动 修改显示行数
+            form.on('select(show-line)', function (data) {
+                console.log(data);
+                let form = $('#show-line');
+                mLayer.layer.msg('正在重新加载行数...');
+                let urlObj = myUrl(location.href);
+                delete urlObj.args.page;
+                urlObj.args.showLine = data.value;
+                location.href = urlObj.encode()
+            });
+
+            /* 处理分页最后面的跳转到第几页 按钮 */
+            $(document).on('click', '.my-page-bar .layui-laypage-btn', function () {
+                let self = $(this);
+                let pageNum = self.prev().val();
+                if (!pageNum) return false;
+                let urlObj = myUrl(location.href);
+                mLayer.layer.msg('正在重新跳转到第 ' + pageNum + ' 页...');
+                urlObj.args.page = pageNum;
+                console.log(urlObj.encode());
+                location.href = urlObj.encode()
+            });
+
+            /*
+            * 根据数据过滤的值, 将过滤信息显示出来
+            */
+            (function () {
+                let headerDom = $('.my-card-header');
+                let filterDom = $('.layui-table thead > tr > th .th-action-filter-form');
+                let titleArr = [];
+
+                let url = myUrl(window.location.href);
+                // console.log("url.args======", url.args);
+                $.each(url.args, function (k, v) {
+                    // 判断下无关字段
+                    if (!v || k === 'page' || k === 'showLine') return true;
+                    //console.log('kk===', k, 'v====', v);
+                    let selectTitle;
+                    let valText;
+                    switch (k) {
+                        case 'search':
+                            selectTitle = '搜索';
+                            valText = url.args.search;
+                            //console.log("search  valText===", valText);
+                            titleArr.push(selectTitle + ": " + valText);
+                            break;
+                        default:
+                            let radioDom = filterDom.find('input[name="' + k + '"]');
+                            // 或者过滤的列名
+                            selectTitle = radioDom.parents('form').prev().text();
+                            switch (typeof v) {
+                                case 'string':
+                                    $.each(radioDom, function () {
+                                        let self = $(this);
+                                        let val = self.val();
+                                        if (val === v) {
+                                            valText = self.attr('title');
+                                            return false;
+                                        }
+                                    });
+                                    break;
+
+                                case 'object':
+                                    valText = [];
+                                    $.each(radioDom, function () {
+                                        let self = $(this);
+                                        let val = self.val();
+                                        if (v.has(val)) {
+                                            valText.push(self.attr('title'));
+                                        }
+                                    });
+
+                            }
+                            if (selectTitle && valText) {
+                                if (typeof valText === 'object') {
+                                    titleArr.push(selectTitle + ": " + JSON.stringify(valText));
+                                } else {
+                                    titleArr.push(selectTitle + ": " + valText);
+                                }
+                            }
+                    }
+
+                });
+                if (titleArr.length > 0) {
+                    let title = titleArr.join(' ; ');
+                    headerDom.show();
+                    headerDom.text('条件: ' + title);
+                }
+            })();
+
+            /*
+            * 自动操作 pannel 链接的按钮, 原来是跳转页面, 现在改为layer打开
+            * */
+            $('.my-panel .layui-btn-container a.layui-btn[my-filter]').on('click', function (e) {
+                let argStr = '';
+                let self = $(this);
+                let href = self.attr('href');
+                let selected = myTable.checker.getSelect();
+                let ids = selected.ids;
+                let filterName = self.attr('my-filter');
+                // console.log(self.attr('my-filter'));
+
+                // 判断是否为新增按钮
+                // 如果不是新增按钮, 则必须有选中项
+                if (filterName.indexOf('add') === -1) {
+                    if (selected.length < 1) {
+                        mLayer.warning('请勾选需要操作的对象');
+                        return false;
+                    }
+                    // 有些按钮仅支持单选操作, 这里做一下判断
+                    if (filterName.indexOf('batch') === -1 && selected.length > 1) {
+                        mLayer.warning('此操作仅支持单选');
+                        return false;
+                    }
+                    // 将页面的参数也一并带上
+                    let urlObj = myUrl();
+                    urlObj.args['id'] = ids;
+                    argStr = '?' + urlObj.encodeArgs();
+                } else {
+                    argStr = location.search;
+                }
+                let url;
+                // 左键由layer打开, 中键新标签页打开
+                // 包含 /0/ 说明是正则表达式形式的url
+                if (href.indexOf("/0/") > 0) {
+                    url = href.replace('/0/', '/' + ids + '/');
+                } else {
+                    url = href + argStr;
+                }
+                let linkType = self.attr('link');
+                let title = self.text();
+                switch (linkType) {
+                    // 左键
+                    case 'layerMax':
+                        //cLayer.close();
+                        cLayer.page(url, title);
+                        break;
+                    case 'layerPanel':
+                        //cLayer.close();
+                        mLayer.panel(url, title);
+                        break;
+                    case 'tab':
+                        let tabObj = window.open(url, "_blank");
+                        if (!tabObj) {
+                            mLayer.warning('请允许打开新标签页.')
+                        }
+                        break;
+                    case 'window':
+                        let windowObj = window.open(url, title, 'width=' + ((window.screen.availWidth - 10) / 2) + ',height=' + (window.screen.availHeight - 30) + ',top=0,left=0,menubar=0,scrollbars=1,resizable=1,status=0,titlebar=0,toolbar=0,location=0');
+                        if (!windowObj) {
+                            mLayer.warning('请允许弹窗.')
+                        }
+                        break;
+                    default:
+                        location.href = url;
+                        break;
+                }
+                return false;
+            });
+
+            // 设置批量操作按钮
+            $('.my-panel .layui-btn-container button.layui-btn[my-filter^="batch-"]').on('click', function (e) {
+                let self = $(this);
+                let tableSelect = myTable.checker.getSelect();
+                let ids = tableSelect.ids;
+                let nameList = tableSelect.names;
+                //console.log('ids===', ids);
+                if (ids.length === 0) {
+                    mLayer.warning('请勾选需要操作的对象');
+                    return false;
+                }
+                let text = $.trim(self.text());
+                let tipText = '';
+                $.each(nameList, function (k, v) {
+                    tipText += v + '\n';
+                });
+                mLayer.confirm('确定要执行 [' + text + '] 吗?\n已选中:\n\n' + tipText, function () {
+                    let href = self.attr('href');
+                    let url = myUrl();
+                    url.args.ids = ids;
+                    $.post(href, url.encodeArgs(), function (result) {
+                        mLayer.success(result, function () {
+                            // 去掉参数刷新
+                            // 防止在最后一页执行批量删除之后, 刷新页面是空数据
+                            let url = new myUrl(location.href);
+                            url.args.page = 1;
+                            location.href = url.encode();
+                        });
+                    });
+                });
+            });
+
+            // 刷新页面后, 更新 历史关键字到搜索框
+            const tableName = 'searchKeyWord';
+            const keyName = location.pathname;
+            let searchHistory = layui.data(tableName, keyName);
+            let tmpDom = '';
+            $.each(searchHistory, function (k, v) {
+                tmpDom += '<dd>' + v + '</dd>';
+            });
+            $('.my-search-bar dl.layui-anim.layui-anim-upbit').append(tmpDom);
+
+            // 监听搜索框提交, 在本地记录下所有搜索记录
+            // 只保存最近10个
+            $('.my-left-panel form[method="get"]').submit(function (e) {
+                let search = $(this).find('input[name="search"]').val();
+                if (search === '') {
+                    return true;
+                }
+                if (typeof searchHistory === "undefined") {
+                    searchHistory = [];
+                } else if (typeof searchHistory !== 'object') {
+                    searchHistory = [searchHistory];
+                }
+                // 防止重复 关键字
+                let index = $.inArray(search, searchHistory);
+                if (index > -1) {
+                    searchHistory.splice(index, 1);
+                }
+                searchHistory.unshift(search);
+                // 如果超出10条, 则删掉一条
+                if (searchHistory.length > 10) {
+                    searchHistory.pop();
+                }
+                layui.data(tableName, {
+                    key: keyName, value: searchHistory
+                });
+            });
+
+            $('input[name="search"]').on('focusin focusout', function (e) {
+                let self = $(this);
+                switch (e.type) {
+                    case 'focusin':
+                        self.next().show();
+                        break;
+                    case 'focusout':
+                        // 延迟关闭, 不然影响 关键字的click事件
+                        setTimeout(function () {
+                            self.next().hide();
+                        }, 200);
+                        break;
+                }
+            });
+
+            $('.my-search-bar dl.layui-anim.layui-anim-upbit dd').on('click', function () {
+                $('input[name="search"]').val($.trim($(this).text()));
+                $('.my-left-panel form[method="get"]').submit();
+            });
+
+            {# 逻辑代码 js 块 #}
+            {% block logicJs %}{% endblock %}
+        });
+    {% endblock %}
+</script>

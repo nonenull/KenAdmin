@@ -1,0 +1,73 @@
+{% extends 'public/BaseLayout.html' %}
+{% block css %}
+    <style>
+        .detail-panel .layui-card {
+            margin-bottom: 50px;
+
+        }
+
+        .detail-panel-line {
+            margin-bottom: 50px;
+        }
+
+        .detail-panel > .detail-panel-line > .detail-panel-line-item > div:first-child {
+            font-weight: bold;
+            text-align: right;
+            word-break: keep-all;
+        }
+
+        .detail-panel > .detail-panel-line > .detail-panel-line-item > div:first-child:after {
+            content: ":";
+            margin: 0 8px 0 2px;
+            position: relative;
+            top: -.5px;
+        }
+
+        .detail-panel > .detail-panel-line > .detail-panel-line-item > div {
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-row layui-col-space5">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md10 layui-col-md-offset1">
+
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">基础信息</li>
+                            <li>用户管理</li>
+                            <li>权限分配</li>
+                            <li>商品管理</li>
+                            <li>订单管理</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <div class="detail-panel">
+                                    {% load detailTag %}
+                                    {{ queryset|toDetail }}
+                                </div>
+                            </div>
+                            <div class="layui-tab-item">2</div>
+                            <div class="layui-tab-item">3</div>
+                            <div class="layui-tab-item">4</div>
+                            <div class="layui-tab-item">5</div>
+                            <div class="layui-tab-item">6</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-card">
+                <div class="layui-card-header">【{{ queryset }}】 详情页</div>
+                <div class="layui-card-body">
+                    <div class="detail-panel">
+                        {% load detailTag %}
+                        {{ queryset|toDetail }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

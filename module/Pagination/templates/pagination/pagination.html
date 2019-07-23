@@ -1,0 +1,62 @@
+﻿{% load paginationBar %}
+
+<div class="layui-fluid my-page-bar">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm3 layui-col-md3 layui-col-lg3">
+            <div class="my-page-bar-left">
+                当前
+                <span class="my-label my-label-info"> {{ records.first }} </span>
+                -
+                <span class="my-label my-label-info"> {{ records.last }} </span>
+                行,总共
+                <span class="my-label my-label-inverse"> {{ paginator.count }} </span>
+                行
+            </div>
+        </div>
+        {% if isPaginated %}
+            <div class="layui-col-sm3 layui-col-md3 layui-col-lg2">
+                <form class="layui-form" method="get" id="show-line">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <select name="showLine" lay-filter="show-line">
+                                {{ paginator.per_page|generateSelect }}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="layui-col-sm12 layui-col-md12 layui-col-lg7">
+                <div class="layui-box layui-laypage layui-laypage-default">
+                    {% if pageObj.has_previous %}
+                        <a class="layui-laypage-prev" href="?page={{ pageObj.previous_page_number }}{{ getvars }}{{ hashtag }}">上一页</a>
+                    {% endif %}
+
+                    {% for page in pages %}
+                        {% if page %}
+                            {% ifequal page pageObj.number %}
+                                <span class="layui-laypage-curr">
+                                            <em class="layui-laypage-em"></em><em>{{ page }}</em>
+                                        </span>
+                            {% else %}
+                                <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">{{ page }}</a>
+                            {% endifequal %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pageObj.has_next %}
+                        <a class="layui-laypage-next"
+                           href="?page={{ pageObj.next_page_number }}{{ getvars }}{{ hashtag }}">下一页</a>
+                    {% endif %}
+
+                    <span class="layui-laypage-skip">
+                            到第
+                            <input type="number" onkeyup="this.value=this.value.replace(/\D/, '');" value="1" class="layui-input">
+                            页
+                            <button type="button" class="layui-laypage-btn">确定</button>
+                        </span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

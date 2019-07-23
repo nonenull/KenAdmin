@@ -1,0 +1,36 @@
+<form class="layui-form">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm8 layui-col-md8 layui-col-lg8">
+            <div class="layui-form-item">
+                {% for name, select in filters.items %}
+                    <div class="layui-inline">
+                        <label class="layui-form-label"> {{ select.cname }} </label>
+                        <div class="layui-input-block">
+                            <select name="{{ namename }}">
+                            <option value="">请选择</option>
+                            {% if select.choices %}
+                                {% for choice in select.choices %}
+                                    <option value="{{ choice.0 }}">{{ choice.1 }} {{ select.toUnit }}</option>
+                                {% endfor %}
+                            {% else %}
+                                {% for option in select.options %}
+                                    <option value="{{ option }}">{{ option }} {{ select.toUnit }}</option>
+                                {% endfor %}
+                            {% endif %}
+
+                            </select>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="layui-col-sm4 layui-col-md4 layui-col-lg4">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit>立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

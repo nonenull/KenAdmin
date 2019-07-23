@@ -1,0 +1,129 @@
+{% extends 'public/BaseLayout.html' %}
+{% block css %}
+{% endblock %}
+
+{% block toolbar-crumbs %}
+    <div class="layui-breadcrumb">
+        <a href="{% url 'platform:center' %}">用户中心</a>
+        <a href=".">用户信息编辑</a>
+        <a><cite>{{ userInfo.account }}</cite></a>
+    </div>
+{% endblock %}
+
+{% block toolbar-form %}
+{% endblock %}
+
+{% block btn-group %}
+{% endblock %}
+
+{% block content %}
+    {% load formTag %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm10 layui-col-md8 layui-col-lg8 layui-col-sm-offset1 layui-col-md-offset2 layui-col-lg-offset2">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-card">
+                    <div class="layui-card-header">用户信息修改</div>
+                    <div class="layui-card-body">
+                        {% if request.user.id == userInfo.id %}
+                            {{ userInfo|toForm:'{"fields":["id","name","mobile","employeeId","email"],"filling":"True"}' }}
+                        {% else %}
+                            {{ userInfo|toForm:'{"fields":["id","name","mobile","email", "employeeId","status","expireTime","comment"],"filling":"True"}' }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-header">修改密码</div>
+                    <div class="layui-card-body">
+                        <form class="layui-form" action="">
+                            <input type="hidden" name="uid" value="{{ userInfo.id }}">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label my-required">原密码</label>
+                                <div class="layui-input-block">
+                                    <input type="password" name="oldPassword" lay-verify="required" placeholder="请输入原密码"
+                                           class="layui-input" autocomplete>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label my-required">新密码</label>
+                                <div class="layui-input-block">
+                                    <input type="password" name="password" {{ userInfo|generateLayVerify:'password' }} placeholder="请输入新密码"
+                                           class="layui-input" autocomplete>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label my-required">确认密码</label>
+                                <div class="layui-input-block">
+                                    <input type="password" name="repassword" {{ userInfo|generateLayVerify:'password' }} placeholder="请再次输入新密码"
+                                           class="layui-input" autocomplete>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="edit-uesr-passwd">修改密码</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<script type="text/javascript">
+    {% block js %}
+        layui.use(['myForm', 'myLayer', 'myDate'], function () {
+            let form = layui.myForm();
+            let mLayer = layui.myLayer(true);
+            let myDate = layui.myDate;
+
+
+            let changePasswdUrl = '';
+            {% if request.user.id == userInfo.id %}
+                changePasswdUrl = "{% url 'platform:setting.changePassword' request.user.id %}";
+            {% else %}
+                changePasswdUrl = "{% url 'platform:setting.changePassword' userInfo.id %}";
+            {% endif %}
+
+            // 修改用户信息
+            form.on('submit(update)', function (data) {
+                var postData = data.field;
+                mLayer.confirm('确定要更改用户信息吗？', function () {
+                    $.post("{% url 'platform:setting.editUser' userInfo.id %}", postData, function (result) {
+                        mLayer.success('用户信息更新成功', function () {
+                            location.reload();
+                        });
+                    });
+                });
+                return false;
+            });
+
+            // 修改密码
+            form.on('submit(edit-uesr-passwd)', function (data) {
+                var postData = data.field;
+                if (postData.oldPassword === postData.password) {
+                    mLayer.warning('请输入和原密码不同的新密码');
+                    return false;
+                }
+                if (postData.password !== postData.repassword) {
+                    mLayer.warning('两次新密码输入不一致,请检查');
+                    return false;
+                }
+                mLayer.confirm('确定要更改用户密码吗？', function () {
+                    $.post("{% url 'platform:setting.changePassword' userInfo.id %}", postData, function (result) {
+                        {% if request.user.id == userInfo.id %}
+                            mLayer.success('用户密码更新成功\n为了安全保障，请用新密码重新登录', function () {
+                                window.parent.location.href = '{% url "platform:logout" %}'
+                            });
+                        {% else %}
+                            mLayer.success('用户密码更新成功\n为了安全保障，请通知用户使用新密码重新登录');
+                        {% endif %}
+                    });
+                });
+                return false;
+            });
+        });
+
+        {{ userInfo|generateValidatorJS:'password' }}
+    {% endblock %}
+</script>

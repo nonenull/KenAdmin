@@ -1,0 +1,63 @@
+{% load pagination %}
+{% load baseTag %}
+{% load tableTag %}
+<style>
+    .th-action-filter-form-item .layui-form-checkbox > span {
+        float: left;
+    }
+</style>
+    <div class="my-table-wrap">
+        <table class="layui-table">
+    <thead>
+    <tr>
+        <th>
+            <div class="my-checkbox-btn my-checkbox-control-btn layui-unselect layui-form-checkbox" lay-skin="primary">
+                <i class="layui-icon"></i>
+            </div>
+        </th>
+        <th>序号</th>
+        {% for name, th in headDict.items %}
+            <th {% if th.sort %}lay-sort{% endif %} {% if th.filter %}lay-tfilter{% endif %}>
+                {% if th.sort or th.filter %}
+                    <div class="th-wrap">
+                        <span class="th-text">{{ th.cname }}</span>
+                        {% if th.filter %}
+                            <form class="th-action-filter-form layui-form">
+                                <div class="th-action-filter-form-item">
+                                    {% for f in th.filter %}
+                                        {% if not f|checkType:'str' and f|length == 2 %}
+                                            <input type="checkbox" lay-skin="primary" name="{{ name }}" value="{{ f.0 }}" title="{{ f.1 }}">
+                                        {% else %}
+                                            <input type="checkbox" lay-skin="primary" name="{{ name }}" value="{{ f }}" title="{{ f }}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <button class="layui-btn layui-btn-normal layui-btn layui-btn-xs" lay-submit>提交</button>
+                                <button type="reset" class="layui-btn layui-btn-primary layui-btn layui-btn-xs">重置</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    {{ th.cname }}
+                {% endif %}
+            </th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+    {% autopaginate querysetList %}
+    {% for obj in querysetList %}
+        <tr data-id="{{ obj.id }}" data-name="{{ obj }}">
+            <td>
+                <div class="my-checkbox-btn layui-unselect layui-form-checkbox" lay-skin="primary">
+                    <i class="layui-icon"></i>
+                </div>
+            </td>
+            <td>{{ forloop.counter|add:pageCounter }}</td>
+            {% Td obj headDict %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    </div>
+{% paginate %}

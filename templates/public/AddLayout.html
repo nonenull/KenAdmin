@@ -1,0 +1,51 @@
+{% extends 'public/AddAndEditLayout.html' %}
+{% load baseTag %}
+{% block content %}
+    {% load formTag %}
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-sm10 layui-col-sm-offset1 layui-col-md8 layui-col-md-offset2 layui-col-lg6 layui-col-lg-offset3">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    {{ model|toForm:'{"action":""}' }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<script>
+    {% block action %}
+
+        let _addUrl = '{% block addUrl %}{{ request.path }}{% endblock %}' || undefined;
+
+        $('.layui-form .layui-form-item').last().children('.layui-input-block').append('<a class="layui-btn layui-btn-warm layui-btn-sm" my-filter="form-cache-button">缓存表单</a>');
+
+        // 根据GET参数, 遍历表单的同名表单项, 赋值
+        let params = {% autoescape off %}{{ request.GET.dict }}{% endautoescape %};
+        form.val("auto-form", params);
+
+
+        {% block formAdd %}
+            // 自动处理 —— 新增
+            form.on('submit(add)', function (data) {
+                try {
+                    $.post(_addUrl, data.field, function (result) {
+                        mLayer.success(result, function () {
+                            mLayer.close();
+                            // mLayer.refresh();
+                            layui.sessionData(tableName, null);
+                            $('.relate-data').html('');
+                        });
+                    });
+                } catch (error) {
+                    let isReferenceErr = ('ReferenceError' === error.name);
+                    if (isReferenceErr) {
+                        console.log('如需要自动监听添加按钮，请检查 _addUrl 变量');
+                    } else {
+                        console.log('新增 发生意外:', error);
+                    }
+                }
+                return false;
+            });
+        {% endblock %}
+    {% endblock %}
+</script>

@@ -1,0 +1,43 @@
+{% extends 'public/ListLayout.html' %}
+<script>
+    {% block logicJs %}
+        layui.myTable({
+            callback: function (myTable) {
+                $('[my-filter="users-toggle-enable-button"]').on('click', function () {
+                    let self = $(this);
+                    let href = self.attr('href');
+
+                    let tableSelect = myTable.checker.getSelect();
+                    let ids = tableSelect.ids;
+                    if (ids.length === 0) {
+                        mLayer.warning('没有选择项');
+                        return false;
+                    }
+                    mLayer.radioPrompt({
+                        'enable': '启用',
+                        'disable': '禁用',
+                    }, function (checkDom) {
+                        let tipList = '';
+                        let title = checkDom.attr('title');
+                        let value = checkDom.val();
+                        $.each(tableSelect.dom, function (k, v) {
+                            tipList += $.trim($(this).children('td').eq(2).text()) + '\n';
+                        });
+                        mLayer.confirm('确定要执行 [' + title + '] 吗?\n已选中:\n\n' + tipList, function () {
+                            let url = myUrl();
+                            url.args.ids = ids;
+                            $.post(href + '?type=' + value, url.encodeArgs(), function (result) {
+                                //console.log(result);
+                                mLayer.success(result, function () {
+                                    mLayer.closeAll();
+                                    location.reload()
+                                });
+                            });
+                        });
+                    });
+                    return false;
+                });
+            }
+        });
+    {% endblock %}
+</script>

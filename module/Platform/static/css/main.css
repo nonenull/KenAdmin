@@ -1,0 +1,262 @@
+html {
+    background-color: #f4f4f4;
+}
+
+.layui-header.header > * {
+    display: inline-block;
+}
+
+.layui-layout-admin .layui-nav.layui-nav-tree li.layui-nav-item {
+    border-bottom: 1px solid #2f2f2f;
+}
+
+.layui-layout-admin .layui-side {
+    background-color: #23262E;
+}
+
+.layui-layout-admin .layui-side .layui-nav {
+    background-color: #23262E;
+}
+
+.layui-side-menu .layui-nav-item dl.layui-nav-child a {
+    margin-left: 15px;
+}
+
+.layui-side-menu dl.layui-nav-child dl.layui-nav-child > dd > a {
+    margin-left: 30px;
+}
+
+.layui-side-menu dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child > dd > a {
+    margin-left: 45px;
+}
+
+.layui-side-menu dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child > dd > a {
+    margin-left: 60px;
+}
+
+.layui-side-menu dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child dl.layui-nav-child > dd > a {
+    margin-left: 75px;
+}
+
+.custom-menu-ctrl {
+    position: relative;
+    top: 20px;
+    left: 12px;
+}
+
+.custom-menu-ctrl .layui-icon {
+    font-size: 22px;
+    color: #009688;
+}
+
+.custom-menu-ctrl .layui-icon:hover {
+    opacity: 0.6;
+}
+
+.logo img {
+    background: azure;
+    padding: 2px 10px;
+    opacity: 0.8;
+}
+
+.layui-body.custom-body {
+    overflow: hidden;
+    bottom: 10px;
+}
+
+.custom-body .tab-sliding {
+    margin: 10px;
+}
+
+.custom-body .layui-unselect.layui-tab-bar {
+    display: none;
+}
+
+.custom-body .layui-tab-title {
+    width: calc(100% - 80px);
+    display: inline-block;
+    float: left;
+    border-bottom: none;
+}
+
+.custom-body .layui-tab-title li {
+    min-width: 100px;
+    border-right: 1px dashed #D4D4D4;
+    padding-left: 10px;
+    padding-right: 2px;
+    height: 100%;
+}
+
+.custom-body .layui-tab-title li > span {
+    float: left;
+    width: 75%;
+}
+
+.custom-body .layui-tab-title .layui-this .layui-tab-close {
+    background-color: #FF5722;
+}
+
+.custom-body .layui-tab-title .layui-this {
+    background-color: #e2e2e2;
+}
+
+.layui-body .layui-tab-content > .layui-show {
+    height: 100%;
+}
+
+.content-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.custom-body .layui-tab-content {
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    padding: 0;
+}
+
+.custom-body .layui-tab {
+    margin: 0;
+    height: 40px;
+    background-color: #fff;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .1);
+    border-bottom: 1px solid #ccc;
+}
+
+
+.header .layui-nav {
+    float: right;
+    background-color: #23262E;
+}
+
+.logo {
+    float: left;
+    margin-top: 10px;
+    margin-left: 6px;
+}
+
+.custom-footer {
+    padding: 15px 0;
+    line-height: 26px;
+    text-align: center;
+    font-weight: 300;
+    color: #666;
+}
+
+.custom-footer .layui-main {
+    line-height: 26px;
+}
+
+.custom-footer a {
+    padding: 0 5px;
+}
+
+body {
+    /*min-width: 1000px;*/
+    overflow: hidden;
+}
+
+#custom-menu-hide {
+    margin-left: 170px !important;
+}
+
+#loading {
+    position: absolute;
+    width: 100%;
+    height: 99%;
+    background-color: RGBA(0, 0, 0, 0.5);
+    z-index: 10000;
+    margin-top: 5px;
+    top: 0;
+    left: 5px;
+    right: 0;
+    display: none;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+
+#loading .loading-mask {
+    top: 30%;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: RGBA(0, 0, 0, 0.6);
+    border-radius: 25px;
+    margin: 0 auto;
+}
+
+#loading i {
+    position: absolute;
+    font-size: 52px;
+    color: #fff;
+    z-index: 100;
+    margin-top: 10px;
+}
+
+#loading i, #loading span {
+    margin-left: 25px;
+}
+
+#loading span {
+    color: #fbfbfb;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 10px;
+}
+
+.layui-tab-right-click-menu {
+    display: none;
+    position: fixed;
+    left: 0;
+    /*top: 101px;*/
+    line-height: 36px;
+    padding: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+    border: 1px solid #d2d2d2;
+    background-color: #fff;
+    z-index: 1000;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.layui-tab-right-click-menu dd {
+    text-align: center;
+}
+
+.layui-tab-right-click-menu dd a {
+    display: block;
+    padding: 0 20px;
+    color: #333;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+}
+
+.layui-tab-right-click-menu dd a:hover {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+#custom-menu-hide {
+    position: fixed;
+    bottom: 0;
+}
+
+/*水平翻转*/
+.flip-x {
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    transform: scaleX(-1);
+    /*IE*/
+    filter: flipH();
+}
+
+#custom-menu-hide i {
+    font-size: 25px;
+}

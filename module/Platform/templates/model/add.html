@@ -1,0 +1,28 @@
+{% extends 'public/AddLayout.html' %}
+
+<script>
+    {% block formAdd %}
+        // 自动处理 —— 新增
+        form.on('submit(add)', function (data) {
+            try {
+                $.post(_addUrl, data.field, function (result) {
+                    mLayer.success('新建完成', function () {
+                        layui.sessionData(tableName, null);
+                        let url = layui.myUrl(location.href);
+                        parent.addReleateData(url.args.name, result);
+                        mLayer.close();
+                        mLayer.refresh();
+                    });
+                });
+            } catch (error) {
+                let isReferenceErr = ('ReferenceError' === error.name);
+                if (isReferenceErr) {
+                    console.log('如需要自动监听添加按钮，请检查 _addUrl 变量');
+                } else {
+                    console.log('新增 发生意外:', error);
+                }
+            }
+            return false;
+        });
+    {% endblock %}
+</script>

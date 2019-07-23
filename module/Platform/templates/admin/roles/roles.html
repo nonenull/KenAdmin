@@ -1,0 +1,8 @@
+{% extends 'public/ListLayout.html' %}
+{% block btn-group-front %}
+    <a class="layui-btn layui-btn-sm" href="{% url 'platform:related' 'platform.role' 0 'platform.user_role' %}" my-filter="role-users-button"
+       link="layerPanel">
+        <i class="layui-icon layui-icon-group"></i> 所属用户
+    </a>
+{% endblock %}
+{#{% block tableBtns %} {% endblock %}#}

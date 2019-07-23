@@ -1,0 +1,12 @@
+ipython
+channels
+django==2.1
+django-debug-toolbar
+django-redis
+django-redis_sessions
+# doc can see https://django-mysql.readthedocs.io/en/latest/model_fields/json_field.html#jsonfield
+django-mysql
+pymysql
+PyMySQL[rsa]
+django-celery
+celery==3.1.25
