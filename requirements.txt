@@ -1,6 +1,6 @@
 ipython
 channels
-django==2.2.3
+django>=2.2.4
 django-debug-toolbar
 django-redis
 django-redis_sessions
