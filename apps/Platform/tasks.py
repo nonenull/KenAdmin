@@ -12,8 +12,7 @@ logger.setLevel(logging.DEBUG)
 @app.task
 def setLoginStatus(userId, sessionKey):
     """
-    重置用户登录状态
-    将用户的session缓存删除
+    设置用户登录状态
     :param users:
     :return:
     """
