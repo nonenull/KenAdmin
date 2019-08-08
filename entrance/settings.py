@@ -116,9 +116,12 @@ DATABASES = {
 SESSION_COOKIE_AGE = 2000 * 60 * 60
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_ENGINE = "redis_sessions.session"
-SESSION_REDIS_HOST = RedisConf.Host
-SESSION_REDIS_PORT = RedisConf.Port
-
+SESSION_REDIS = {
+    'host': RedisConf.Host,
+    'port': RedisConf.Port,
+    'db': 0,
+    'prefix': 'session',
+}
 
 def getCacheBackend(db=1):
     return "redis://{}:{}/{}".format(RedisConf.Host, RedisConf.Port, db)
