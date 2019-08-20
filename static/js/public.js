@@ -142,51 +142,6 @@ layui.define(['myElement', 'myLayer', 'myForm', 'util', 'myDate'], function (exp
         clayer.layer.msg('执行中...');
     });
 
-    // 设置 form verify
-    (function () {
-        let checkConpanyEmail = function (value, item) {
-            if (!value) return;
-            // 先验证一下 email
-            let emailRule = form.config.verify.email;
-            // console.log('emailRule[0]==',emailRule[0]);
-            // console.log('value==',value);
-            // console.log('emailRule[0].test(value)==',emailRule[0].test(value));
-            if (!emailRule[0].test(value)) {
-                return emailRule[1]
-            }
-
-            let state = false;
-            $.each(emailPrefix, function (k, v) {
-                if (value.indexOf(v) > 0) {
-                    state = true;
-                    return false;
-                }
-            });
-            if (!state) {
-                return '仅支持使用公司的邮箱 ' + emailPrefix
-            }
-        };
-        const emailPrefix = ['@hengxinyongli.com', '@tekuaikeji.com'];
-        form.verify({
-            companyEmail: checkConpanyEmail, companyEmails: function (value, item) {
-                if (!value) return;
-                let splits = value.split(',');
-                let text = '';
-                $.each(splits, function (k, v) {
-                    // console.log('splits======', k, v);
-                    v = $.trim(v);
-                    let result = checkConpanyEmail(v, item);
-                    if (result) {
-                        text = result;
-                        return false;
-                    }
-                });
-                // console.log('text===', text);
-                return text;
-            },
-        });
-    }());
-
     // 根据滚动条的出现隐藏菜单栏目
     (function () {
         // 0 代表 关闭, 1 开启
