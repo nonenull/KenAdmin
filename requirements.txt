@@ -8,5 +8,5 @@ django-redis_sessions
 django-mysql
 mysqlclient
 django-celery
-celery==3.1.25
+celery==5.2.2
 requests
